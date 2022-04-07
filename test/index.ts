@@ -22,7 +22,7 @@ describe("Ballot", function () {
     await ballot.deployed();
 
     const timestamp = await getBlockTimestamp();
-    console.log(`Deploy timestamp: ${timestamp}`);
+    console.log(`Deploy timestamp: ${new Date(timestamp * 1000)}`);
   });
 
   it("Should vote correctly", async function () {
@@ -48,6 +48,6 @@ describe("Ballot", function () {
     // Assert
     await expect(ballot.vote(1)).to.be.revertedWith("TooLate()");
     timestamp = await getBlockTimestamp();
-    console.log(`Reverted timestamp: ${timestamp}`);
+    console.log(`Reverted timestamp: ${new Date(timestamp * 1000)}`);
   });
 });
