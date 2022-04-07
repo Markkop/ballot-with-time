@@ -3,7 +3,13 @@ import { formatBytes32String } from "ethers/lib/utils";
 import { ethers } from "hardhat";
 import { Ballot } from "../typechain";
 
-describe("Greeter", function () {
+async function getBlockTimestamp() {
+  const blockNum = await ethers.provider.getBlockNumber();
+  const block = await ethers.provider.getBlock(blockNum);
+  return block.timestamp;
+}
+
+describe("Ballot", function () {
   let ballot: Ballot;
 
   this.beforeEach(async () => {
@@ -14,6 +20,9 @@ describe("Greeter", function () {
     ]);
 
     await ballot.deployed();
+
+    const timestamp = await getBlockTimestamp();
+    console.log(`Deploy timestamp: ${timestamp}`);
   });
 
   it("Should vote correctly", async function () {
@@ -30,9 +39,7 @@ describe("Greeter", function () {
 
   it("Should not be able to vote after 5 minutes", async function () {
     // Arrange
-    const blockNum = await ethers.provider.getBlockNumber();
-    const block = await ethers.provider.getBlock(blockNum);
-    const timestamp = block.timestamp;
+    let timestamp = await getBlockTimestamp();
     const fiveMinutes = 5 * 60;
 
     // Act
@@ -40,5 +47,7 @@ describe("Greeter", function () {
 
     // Assert
     await expect(ballot.vote(1)).to.be.revertedWith("TooLate()");
+    timestamp = await getBlockTimestamp();
+    console.log(`Reverted timestamp: ${timestamp}`);
   });
 });
